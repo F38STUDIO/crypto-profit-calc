@@ -1,0 +1,35 @@
+version: '2' 
+services:
+  db:
+    image: postgres:17
+    user: root
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoof38studio
+      POSTGRES_DB: postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  odoo18:
+    build: .
+    container_name: odoo18-dev
+    depends_on:
+      - db
+    ports:
+      - "8071:8069"   # Web
+      - "20071:8072"  # Longpolling
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: odoof38studio
+    volumes:
+      - ./addons:/mnt/extra-addons
+      - ./custom_addons:/mnt/extra-addons/custom
+      - ./odoo.conf:/etc/odoo/odoo.conf
+    restart: always
+    tty: true
+    user: odoo
+
+volumes:
+  postgres_data:
